@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(
+    TETRAY
+    LANGUAGES CXX
+    VERSION 0.1.0
+)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+include(FetchContent)
+
+FetchContent_Declare(
+    raylib
+    URL https://github.com/raysan5/raylib/archive/refs/heads/master.zip
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+)
+
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_GAMES OFF CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(raylib)
+
+add_executable(game main.cpp)
+
+target_link_libraries(game PRIVATE raylib)
