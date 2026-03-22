@@ -21,6 +21,14 @@ set(BUILD_GAMES OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(raylib)
 
+add_subdirectory(src)
+
+target_include_directories(src PRIVATE include)
+
 add_executable(game main.cpp)
 
 target_link_libraries(game PRIVATE raylib)
+
+target_include_directories(game PRIVATE include)
+
+target_link_libraries(game PRIVATE src)
