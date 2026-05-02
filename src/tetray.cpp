@@ -79,7 +79,7 @@ namespace tet
     static constexpr int COLOR_MASK = 0b111;
     static constexpr int INITIALIZE = 0;
 
-    static std::mutex boardMutex;
+    static std::mutex dataMutex;
     static int coloredBoard[BOARD_DEPTH];
 
     static inline long long getBitSlicing(long long value, const byte &begin, const byte &end)
@@ -97,8 +97,6 @@ namespace tet
 
     static bool placeable(const sbyte &bitCount, const sbyte &depth, const byte &shapeIndex, const byte &shapeRotateIndex)
     {
-        std::lock_guard<std::mutex> lock(boardMutex);
-
         if (bitCount < 0 || bitCount >= BOARD_WIDTH || depth < 0 || depth >= BOARD_DEPTH)
             return false;
 
@@ -140,8 +138,6 @@ namespace tet
 
     static void draw(const sbyte &bitCount, const sbyte &depth, const byte &shapeIndex, const byte &shapeRotateIndex, const bool erase = false)
     {
-        std::lock_guard<std::mutex> lock(boardMutex);
-
         for (sbyte i = -SHAPE_OFFSET; i <= SHAPE_OFFSET; i++)
         {
             if (depth + i < 0 || depth + i >= BOARD_DEPTH)
@@ -173,7 +169,6 @@ namespace tet
     static std::atomic<bool> isRun(false);
     static std::atomic<unsigned long long> elapsed(0ULL);
 
-    static std::mutex currentMutex;
     static byte currentShape = 1;
     static byte currentRotate = 0;
     static sbyte currentBitCount = BOARD_WIDTH / 2;
@@ -187,7 +182,7 @@ namespace tet
         {
 
             {
-                std::lock_guard<std::mutex> lock(currentMutex);
+                std::lock_guard<std::mutex> lock(dataMutex);
 
                 draw(currentBitCount, currentDepth, currentShape, currentRotate, true);
                 if (placeable(currentBitCount, currentDepth + 1, currentShape, currentRotate))
@@ -244,7 +239,7 @@ namespace tet
 
     void TryMove(sbyte to)
     {
-        std::lock_guard<std::mutex> lock(currentMutex);
+        std::lock_guard<std::mutex> lock(dataMutex);
         if (placeable(currentBitCount + to, currentDepth, currentShape, currentRotate))
         {
             currentBitCount += to;
@@ -263,7 +258,7 @@ namespace tet
             return BLACK;
         }
 
-        std::lock_guard<std::mutex> b_lock(boardMutex);
+        std::lock_guard<std::mutex> b_lock(dataMutex);
         auto value = getBitSlicing(coloredBoard[row], column * MASK_COUNT, (column + 1) * MASK_COUNT);
         return colors[value];
     }
