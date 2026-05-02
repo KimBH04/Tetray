@@ -77,7 +77,7 @@ namespace tet
     static constexpr sbyte CREATE_DEPTH = 5;
     static constexpr sbyte MASK_COUNT = 3;
     static constexpr int COLOR_MASK = 0b111;
-    static constexpr int INITIALIZE = 0;
+    static constexpr int INITIALIZE = 0b11'000'000'000'000'000'000'000'000'000'000;
 
     static std::mutex dataMutex;
     static int coloredBoard[BOARD_DEPTH];
@@ -136,7 +136,7 @@ namespace tet
         return true;
     }
 
-    static void draw(const sbyte &bitCount, const sbyte &depth, const byte &shapeIndex, const byte &shapeRotateIndex, const bool erase = false)
+    static void draw(const sbyte &bitCount, const sbyte &depth, const byte &shapeIndex, const byte &shapeRotateIndex)
     {
         for (sbyte i = -SHAPE_OFFSET; i <= SHAPE_OFFSET; i++)
         {
@@ -155,9 +155,9 @@ namespace tet
                 if (((shapeLine >> (SHAPE_OFFSET + j)) & 1) == 0)
                     continue;
 
-                if (erase)
-                    coloredBoard[depth + i] &= 0x3FFFFFFF ^ ((int)COLOR_MASK << ((bitCount + j) * MASK_COUNT));
-                else
+                // if (erase)
+                //     coloredBoard[depth + i] &= 0x3FFFFFFF ^ ((int)COLOR_MASK << ((bitCount + j) * MASK_COUNT));
+                // else
                     coloredBoard[depth + i] |= (int)shapeIndex << ((bitCount + j) * MASK_COUNT);
             }
         }
@@ -180,11 +180,9 @@ namespace tet
     {
         while (isRun)
         {
-
             {
                 std::lock_guard<std::mutex> lock(dataMutex);
 
-                draw(currentBitCount, currentDepth, currentShape, currentRotate, true);
                 if (placeable(currentBitCount, currentDepth + 1, currentShape, currentRotate))
                 {
                     currentDepth++;
@@ -202,8 +200,6 @@ namespace tet
 
                     std::cout << "Placed" << std::endl;
                 }
-                
-                draw(currentBitCount, currentDepth, currentShape, currentRotate);
             }
 
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / RATE));
@@ -251,7 +247,7 @@ namespace tet
 
     }
 
-    Color GetColor(byte row, byte column)
+    Color GetColor(sbyte row, sbyte column)
     {
         if (row < 0 || column < 0 || row >= BOARD_DEPTH || column >= BOARD_WIDTH)
         {
@@ -260,6 +256,21 @@ namespace tet
 
         std::lock_guard<std::mutex> b_lock(dataMutex);
         auto value = getBitSlicing(coloredBoard[row], column * MASK_COUNT, (column + 1) * MASK_COUNT);
+        if (value == 0)
+        {
+            auto rowDiff = row - currentDepth, colDiff = column - currentBitCount;
+            if (std::abs(rowDiff) <= 2 && std::abs(colDiff) <= 2)
+            {
+                auto line =
+                    getBitSlicing(
+                        shapes[currentShape][currentRotate],
+                        (SHAPE_OFFSET + rowDiff) * SHAPE_SIZE,
+                        (SHAPE_OFFSET + rowDiff + 1) * SHAPE_SIZE
+                    );
+                
+                value = ((line >> (SHAPE_OFFSET + colDiff)) & 1) * currentShape;
+            }
+        }
         return colors[value];
     }
 } // namespace tet

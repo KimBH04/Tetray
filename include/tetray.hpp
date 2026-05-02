@@ -32,5 +32,5 @@ namespace tet
 
     void TryRotate(sbyte to);
 
-    Color GetColor(byte row, byte column);
+    Color GetColor(sbyte row, sbyte column);
 } // namespace tet
