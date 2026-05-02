@@ -82,6 +82,19 @@ namespace tet
     static std::mutex dataMutex;
     static int coloredBoard[BOARD_DEPTH];
 
+    static std::jthread runner;
+
+    static constexpr unsigned long long RATE = 5ULL;
+    static std::atomic<bool> isRun(false);
+    static std::atomic<unsigned long long> elapsed(0ULL);
+
+    static byte currentShape = 1;
+    static byte currentRotate = 0;
+    static sbyte currentBitCount = BOARD_WIDTH / 2;
+    static sbyte currentDepth = CREATE_DEPTH;
+
+    static byte next = 1;
+
     static inline long long getBitSlicing(long long value, const byte &begin, const byte &end)
     {
         if (begin >= end)
@@ -143,7 +156,12 @@ namespace tet
             if (depth + i < 0 || depth + i >= BOARD_DEPTH)
                 continue;
 
-            auto shapeLine = getBitSlicing(shapes[shapeIndex][shapeRotateIndex], (SHAPE_OFFSET + i) * SHAPE_SIZE, (SHAPE_OFFSET + i + 1) * SHAPE_SIZE);
+            auto shapeLine =
+                getBitSlicing(
+                    shapes[shapeIndex][shapeRotateIndex],
+                    (SHAPE_OFFSET + i) * SHAPE_SIZE,
+                    (SHAPE_OFFSET + i + 1) * SHAPE_SIZE
+                );
             if (shapeLine == 0)
                 continue;
 
@@ -162,19 +180,6 @@ namespace tet
             }
         }
     }
-
-    static std::jthread runner;
-
-    static constexpr unsigned long long RATE = 10ULL;
-    static std::atomic<bool> isRun(false);
-    static std::atomic<unsigned long long> elapsed(0ULL);
-
-    static byte currentShape = 1;
-    static byte currentRotate = 0;
-    static sbyte currentBitCount = BOARD_WIDTH / 2;
-    static sbyte currentDepth = CREATE_DEPTH;
-
-    static byte next = 1;
 
     static void run()
     {
