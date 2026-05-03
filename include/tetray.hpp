@@ -13,6 +13,7 @@
 
 #define LEFT    (sbyte)-1
 #define RIGHT   (sbyte) 1
+#define HALF    (sbyte) 2
 
 typedef unsigned char byte;
 typedef signed char sbyte;

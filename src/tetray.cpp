@@ -1,5 +1,8 @@
 #include <iostream>
+
 #include <queue>
+#include <span>
+
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -21,48 +24,98 @@ namespace tet
         {
             { 0, 0, 0, 0, }, // NONE
             { // Z
+                0b00000'00010'00110'00100'00000,
                 0b00000'00000'01100'00110'00000,
                 0b00000'00100'01100'01000'00000,
                 0b00000'01100'00110'00000'00000,
-                0b00000'00010'00110'00100'00000,
             },
             { // L
+                0b00000'00100'00100'00110'00000,
                 0b00000'00000'01110'01000'00000,
                 0b00000'01100'00100'00100'00000,
                 0b00000'00010'01110'00000'00000,
-                0b00000'00100'00100'00110'00000,
             },
             { // O
+                0b00000'00000'00110'00110'00000,
                 0b00000'00000'01100'01100'00000,
                 0b00000'01100'01100'00000'00000,
                 0b00000'00110'00110'00000'00000,
-                0b00000'00000'00110'00110'00000,
             },
             { // S
+                0b00000'00100'00110'00010'00000,
                 0b00000'00000'00110'01100'00000,
                 0b00000'01000'01100'00100'00000,
                 0b00000'00110'01100'00000'00000,
-                0b00000'00100'00110'00010'00000,
             },
             { // I
+                0b00000'00100'00100'00100'00100,
                 0b00000'00000'11110'00000'00000,
                 0b00100'00100'00100'00100'00000,
                 0b00000'00000'01111'00000'00000,
-                0b00000'00100'00100'00100'00100,
             },
             { // J
+                0b00000'00110'00100'00100'00000,
                 0b00000'00000'01110'00010'00000,
                 0b00000'00100'00100'01100'00000,
                 0b00000'01000'01110'00000'00000,
-                0b00000'00110'00100'00100'00000,
             },
             { // T
+                0b00000'00100'00110'00100'00000,
                 0b00000'00000'01110'00100'00000,
                 0b00000'00100'01100'00100'00000,
                 0b00000'00100'01110'00000'00000,
-                0b00000'00100'00110'00100'00000,
             },
         };
+    
+        // Super Rotation System offsets
+        static constexpr std::pair<sbyte, sbyte> JLSTZOffset[][5] =
+        {   // J L S T Z
+            {   // l
+                {  0,  0 }, { -1,  0 }, { -1, -1 }, {  0,  2 }, { -1,  2 },
+            },
+            {   // 0
+                {  0,  0 }, {  0,  0 }, {  0,  0 }, {  0,  0 }, {  0,  0 },
+            },
+            {   // r
+                {  0,  0 }, {  1,  0 }, {  1, -1 }, {  0,  2 }, {  1,  2 },
+            },
+            {   // 2
+                {  0,  0 }, {  0,  0 }, {  0,  0 }, {  0,  0 }, {  0,  0 },
+            },
+        };
+        
+        static constexpr std::pair<sbyte, sbyte> OOffset[][1] =
+        {   // O
+            {   // l
+                { -1,  0 },
+            },
+            {   // 0
+                {  0,  0 },
+            },
+            {   // r
+                {  0, -1 },
+            },
+            {   // 2
+                { -1, -1 },
+            },
+        };
+    
+        static constexpr std::pair<sbyte, sbyte> IOffset[][5] =
+        {   // I
+            {   // l
+                {  0,  1 }, {  0,  1 }, {  0,  1 }, {  0, -1 }, {  0,  2 },
+            },
+            {   // 0
+                {  0,  0 }, { -1,  0 }, {  2,  0 }, { -1,  0 }, {  2,  0 },
+            },
+            {   // r
+                { -1,  0 }, {  0,  0 }, {  0,  0 }, {  0,  1 }, {  0, -2 },
+            },
+            {   // 2
+                { -1,  1 }, {  1,  1 }, { -2,  1 }, {  1,  0 }, { -2,  0 },
+            },
+        };
+
     } // namespace shapes
 
     using namespace shape;
@@ -89,7 +142,7 @@ namespace tet
     static std::atomic<unsigned long long> elapsed(0ULL);
 
     static byte currentShape = 1;
-    static byte currentRotate = 0;
+    static byte currentRotate = 1;
     static sbyte currentBitCount = BOARD_WIDTH / 2;
     static sbyte currentDepth = CREATE_DEPTH;
 
@@ -106,6 +159,35 @@ namespace tet
             return value;
 
         return value & ((1LL << (end - begin)) - 1LL);
+    }
+
+    static inline std::span<const std::pair<sbyte, sbyte>> getSRSOffset(const byte &minoType, const byte &rotate)
+    {
+        if (rotate >= 4)
+        {
+            std::cerr << "[getSRSOffset] : " << rotate << " is 4 or more";
+            return {};
+        }
+
+        switch (minoType)
+        {
+        case J_MINO:
+        case L_MINO:
+        case S_MINO:
+        case T_MINO:
+        case Z_MINO:
+            return JLSTZOffset[rotate];
+        
+        case O_MINO:
+            return OOffset[rotate];
+        
+        case I_MINO:
+            return IOffset[rotate];
+
+        default:
+            std::cerr << "[getSRSOffset] : " << minoType << " is not defined";
+            return {};
+        }
     }
 
     static bool placeable(const sbyte &bitCount, const sbyte &depth, const byte &shapeIndex, const byte &shapeRotateIndex)
@@ -191,19 +273,15 @@ namespace tet
                 if (placeable(currentBitCount, currentDepth + 1, currentShape, currentRotate))
                 {
                     currentDepth++;
-
-                    std::cout << "Down" << std::endl;
                 }
                 else
                 {
                     draw(currentBitCount, currentDepth, currentShape, currentRotate);
 
                     currentShape = std::rand() % 7 + 1;
-                    currentRotate = 0;
+                    currentRotate = 1;
                     currentBitCount = BOARD_WIDTH / 2;
                     currentDepth = CREATE_DEPTH;
-
-                    std::cout << "Placed" << std::endl;
                 }
             }
 
@@ -247,9 +325,26 @@ namespace tet
         }
     }
 
-    void TryRotate(sbyte to)
+    void TryRotate(sbyte rotate)
     {
+        std::lock_guard<std::mutex> lock(dataMutex);
 
+        byte rotateTo = (currentRotate + 4 + rotate) & 0b11;
+        auto from = getSRSOffset(currentShape, currentRotate);
+        auto to   = getSRSOffset(currentShape, rotateTo);
+        auto size = from.size();
+        for (size_t i = 0; i < size; i++)
+        {
+            sbyte x = from[i].first  - to[i].first;
+            sbyte y = -from[i].second + to[i].second;
+            if (placeable(currentBitCount + x, currentDepth + y, currentShape, rotateTo))
+            {
+                currentBitCount += x;
+                currentDepth += y;
+                currentRotate = rotateTo;
+                break;
+            }
+        }
     }
 
     Color GetColor(sbyte row, sbyte column)

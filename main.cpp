@@ -16,16 +16,48 @@ int main()
 
     while (!WindowShouldClose())
     {
+        {
+            if (IsKeyPressed(KEY_LEFT))
+            {
+                std::cout << "Left" << std::endl;
+                tet::TryMove(LEFT);
+            }
+
+            if (IsKeyPressed(KEY_RIGHT))
+            {
+                std::cout << "Right" << std::endl;
+                tet::TryMove(RIGHT);
+            }
+
+            if (IsKeyPressed(KEY_A))
+            {
+                std::cout << "Left rotate" << std::endl;
+                tet::TryRotate(LEFT);
+            }
+
+            if (IsKeyPressed(KEY_S))
+            {
+                std::cout << "Half rotate" << std::endl;
+                tet::TryRotate(HALF);
+            }
+
+            if (IsKeyPressed(KEY_D))
+            {
+                std::cout << "Right rotate" << std::endl;
+                tet::TryRotate(RIGHT);
+            }
+        }
+
         BeginDrawing();
         {
-        ClearBackground(BLACK);
+            ClearBackground(BLACK);
 
             DrawLine(0, tet::BOARD_DEPTH * BLOCK_SIZE, tet::BOARD_WIDTH * BLOCK_SIZE, tet::BOARD_DEPTH * BLOCK_SIZE, WHITE);
 
-        for (byte r = 0; r < tet::BOARD_DEPTH; r++)
-        {
-            for (byte c = 0; c < tet::BOARD_WIDTH; c++)
+            for (byte r = 0; r < tet::BOARD_DEPTH; r++)
             {
+                for (byte c = 0; c < tet::BOARD_WIDTH; c++)
+                {
                     DrawRectangle(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, tet::GetColor(r, c));
                 }
             }
