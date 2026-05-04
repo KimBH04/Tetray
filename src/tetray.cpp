@@ -130,7 +130,8 @@ namespace tet
     static constexpr sbyte CREATE_DEPTH = 5;
     static constexpr sbyte MASK_COUNT = 3;
     static constexpr int COLOR_MASK = 0b111;
-    static constexpr int INITIALIZE = 0b11'000'000'000'000'000'000'000'000'000'000;
+    static constexpr int INITIALIZE = 0;
+    static constexpr int FILLEDLINE = 0xFFFFFFFF;
 
     static std::mutex dataMutex;
     static int coloredBoard[BOARD_DEPTH];
@@ -263,6 +264,36 @@ namespace tet
         }
     }
 
+    static inline void updateBoard()
+    {
+        sbyte depth = BOARD_DEPTH - 1;
+        while (depth >= 0)
+        {
+            bool isFilled = [depth]()
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    if (((coloredBoard[depth] >> (i * MASK_COUNT)) & COLOR_MASK) == 0)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }();
+
+            if (!isFilled)
+            {
+                depth--;
+                continue;
+            }
+
+            for (sbyte i = depth; i > 0; i--)
+            {
+                coloredBoard[i] = coloredBoard[i - 1];
+            }
+        }
+    }
+
     static void run()
     {
         while (isRun)
@@ -283,6 +314,8 @@ namespace tet
                 currentRotate = 1;
                 currentBitCount = BOARD_WIDTH / 2;
                 currentDepth = CREATE_DEPTH;
+
+                updateBoard();
             }
 
             elapsed++;
