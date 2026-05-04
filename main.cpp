@@ -52,8 +52,6 @@ int main()
         {
             ClearBackground(BLACK);
 
-            DrawLine(0, tet::BOARD_DEPTH * BLOCK_SIZE, tet::BOARD_WIDTH * BLOCK_SIZE, tet::BOARD_DEPTH * BLOCK_SIZE, WHITE);
-
             for (byte r = 0; r < tet::BOARD_DEPTH; r++)
             {
                 for (byte c = 0; c < tet::BOARD_WIDTH; c++)
@@ -61,6 +59,9 @@ int main()
                     DrawRectangle(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, tet::GetColor(r, c));
                 }
             }
+
+            DrawLine(0, tet::BOARD_DEPTH * BLOCK_SIZE, tet::BOARD_WIDTH * BLOCK_SIZE, tet::BOARD_DEPTH * BLOCK_SIZE, WHITE);
+            DrawLine(tet::BOARD_WIDTH * BLOCK_SIZE, 0, tet::BOARD_WIDTH * BLOCK_SIZE, tet::BOARD_DEPTH * BLOCK_SIZE, WHITE);
         }
         EndDrawing();
     }
