@@ -267,25 +267,24 @@ namespace tet
     {
         while (isRun)
         {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000 / RATE));
+
+            std::lock_guard<std::mutex> lock(dataMutex);
+
+            if (placeable(currentBitCount, currentDepth + 1, currentShape, currentRotate))
             {
-                std::lock_guard<std::mutex> lock(dataMutex);
+                currentDepth++;
+            }
+            else
+            {
+                draw(currentBitCount, currentDepth, currentShape, currentRotate);
 
-                if (placeable(currentBitCount, currentDepth + 1, currentShape, currentRotate))
-                {
-                    currentDepth++;
-                }
-                else
-                {
-                    draw(currentBitCount, currentDepth, currentShape, currentRotate);
-
-                    currentShape = std::rand() % 7 + 1;
-                    currentRotate = 1;
-                    currentBitCount = BOARD_WIDTH / 2;
-                    currentDepth = CREATE_DEPTH;
-                }
+                currentShape = std::rand() % 7 + 1;
+                currentRotate = 1;
+                currentBitCount = BOARD_WIDTH / 2;
+                currentDepth = CREATE_DEPTH;
             }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000 / RATE));
             elapsed++;
         }
     }
