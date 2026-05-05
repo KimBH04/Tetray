@@ -19,7 +19,7 @@ namespace tet
         static constexpr sbyte SHAPE_OFFSET = SHAPE_SIZE / 2;
         static constexpr sbyte SHAPE_LINE_MASK = 0b11111;
 
-        static const Color colors[] = { BLACK, RED, ORANGE, YELLOW, GREEN, BLUE, DARKBLUE, PURPLE };
+        static const Color colors[] = { BLACK, RED, ORANGE, YELLOW, GREEN, SKYBLUE, BLUE, PURPLE };
         static constexpr int shapes[SHAPE_COUNT][SHAPE_ROTATE_COUNT] =
         {
             { 0, 0, 0, 0, }, // NONE

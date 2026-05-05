@@ -7,6 +7,8 @@ const int HEIGHT = 600;
 const char *TITLE = "Tetray";
 
 const int BLOCK_SIZE = 20;
+const int OFFSET_X = 50;
+const int OFFSET_Y = 0;
 
 int main()
 {
@@ -50,18 +52,18 @@ int main()
 
         BeginDrawing();
         {
-            ClearBackground(BLACK);
+            ClearBackground(RAYWHITE);
 
             for (byte r = 0; r < tet::BOARD_DEPTH; r++)
             {
                 for (byte c = 0; c < tet::BOARD_WIDTH; c++)
                 {
-                    DrawRectangle(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, tet::GetColor(r, c));
+                    DrawRectangle(c * BLOCK_SIZE + OFFSET_X, r * BLOCK_SIZE + OFFSET_Y, BLOCK_SIZE, BLOCK_SIZE, tet::GetColor(r, c));
                 }
             }
 
-            DrawLine(0, tet::BOARD_DEPTH * BLOCK_SIZE, tet::BOARD_WIDTH * BLOCK_SIZE, tet::BOARD_DEPTH * BLOCK_SIZE, WHITE);
-            DrawLine(tet::BOARD_WIDTH * BLOCK_SIZE, 0, tet::BOARD_WIDTH * BLOCK_SIZE, tet::BOARD_DEPTH * BLOCK_SIZE, WHITE);
+            // DrawLine(0, tet::BOARD_DEPTH * BLOCK_SIZE, tet::BOARD_WIDTH * BLOCK_SIZE, tet::BOARD_DEPTH * BLOCK_SIZE, WHITE);
+            // DrawLine(tet::BOARD_WIDTH * BLOCK_SIZE, 0, tet::BOARD_WIDTH * BLOCK_SIZE, tet::BOARD_DEPTH * BLOCK_SIZE, WHITE);
         }
         EndDrawing();
     }
