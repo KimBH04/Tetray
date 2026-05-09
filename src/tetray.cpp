@@ -264,6 +264,25 @@ namespace tet
         }
     }
 
+    static inline bool trySuperRotationSystem(const byte &target, sbyte &out_x, sbyte &out_y)
+    {
+        auto from = getSRSOffset(currentShape, currentRotate);
+        auto to   = getSRSOffset(currentShape, target);
+        auto size = from.size();
+        for (size_t i = 0; i < size; i++)
+        {
+            sbyte x = from[i].first - to[i].first;
+            sbyte y = to[i].second  - from[i].second;
+            if (placeable(currentBitCount + x, currentDepth + y, currentShape, target))
+            {
+                out_x = x;
+                out_y = y;
+                return true;
+            }
+        }
+        return false;
+    }
+
     static inline void updateBoard()
     {
         sbyte depth = BOARD_DEPTH - 1;
@@ -362,20 +381,12 @@ namespace tet
         std::lock_guard<std::mutex> lock(dataMutex);
 
         byte rotateTo = (currentRotate + 4 + rotate) & 0b11;
-        auto from = getSRSOffset(currentShape, currentRotate);
-        auto to   = getSRSOffset(currentShape, rotateTo);
-        auto size = from.size();
-        for (size_t i = 0; i < size; i++)
+        sbyte x, y;
+        if (trySuperRotationSystem(rotateTo, x, y))
         {
-            sbyte x = from[i].first  - to[i].first;
-            sbyte y = -from[i].second + to[i].second;
-            if (placeable(currentBitCount + x, currentDepth + y, currentShape, rotateTo))
-            {
-                currentBitCount += x;
-                currentDepth += y;
-                currentRotate = rotateTo;
-                break;
-            }
+            currentBitCount += x;
+            currentDepth += y;
+            currentRotate = rotateTo;
         }
     }
 
