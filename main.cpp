@@ -13,11 +13,22 @@ const int OFFSET_Y = 0;
 int main()
 {
     InitWindow(WIDTH, HEIGHT, TITLE);
+
+reGame:
     tet::Init();
     tet::Run();
 
     while (!WindowShouldClose())
     {
+        if (tet::IsEnd())
+        {
+            if (IsKeyPressed(KEY_R))
+            {
+                std::cout << "Re" << std::endl;
+                goto reGame;
+            }
+        }
+
         {
             if (IsKeyPressed(KEY_LEFT))
             {

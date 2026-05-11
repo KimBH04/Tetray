@@ -140,6 +140,7 @@ namespace tet
 
     static constexpr unsigned long long RATE = 5ULL;
     static std::atomic<bool> isRun(false);
+    static std::atomic<bool> isPlay(false);
     static std::atomic<unsigned long long> elapsed(0ULL);
 
     static byte currentShape = 1;
@@ -315,7 +316,7 @@ namespace tet
 
     static void run()
     {
-        while (isRun)
+        while (isRun && isPlay)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / RATE));
 
@@ -331,8 +332,16 @@ namespace tet
 
                 currentShape = std::rand() % 7 + 1;
                 currentRotate = 1;
-                currentBitCount = BOARD_WIDTH / 2;
+                currentBitCount = BOARD_WIDTH / 2 - 1;
                 currentDepth = CREATE_DEPTH;
+
+                if (!placeable(currentBitCount, currentDepth, currentShape, currentRotate))
+                {
+                    isRun = false;
+                    isPlay = false;
+                    std::cout << "Game Over" << std::endl;
+                    break;
+                }
 
                 updateBoard();
             }
@@ -348,6 +357,15 @@ namespace tet
         {
             coloredBoard[i] = INITIALIZE;
         }
+        isRun = false;
+        isPlay = false;
+
+        std::lock_guard<std::mutex> lock(dataMutex);
+        currentShape = std::rand() % 7 + 1;
+        currentRotate = 1;
+        currentBitCount = BOARD_WIDTH / 2 - 1;
+        currentDepth = CREATE_DEPTH;
+
     }
 
     void Run()
@@ -358,8 +376,14 @@ namespace tet
         }
 
         isRun = true;
+        isPlay = true;
         runner = std::jthread(run);
         std::cout << "Start running" << std::endl;
+    }
+
+    bool IsEnd()
+    {
+        return !isPlay.load();
     }
 
     void Stop()

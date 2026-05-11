@@ -27,6 +27,8 @@ namespace tet
 
     void Run();
 
+    bool IsEnd();
+
     void Stop();
 
     void TryMove(sbyte to);
