@@ -414,6 +414,26 @@ namespace tet
         }
     }
 
+    void SoftDrop()
+    {            
+        std::lock_guard<std::mutex> lock(dataMutex);
+
+        if (placeable(currentBitCount, currentDepth + 1, currentShape, currentRotate))
+        {
+            currentDepth++;
+        }
+    }
+
+    void HardDrop()
+    {      
+        std::lock_guard<std::mutex> lock(dataMutex);
+
+        while (placeable(currentBitCount, currentDepth + 1, currentShape, currentRotate))
+        {
+            currentDepth++;
+        }
+    }
+
     Color GetColor(sbyte row, sbyte column)
     {
         if (row < 0 || column < 0 || row >= BOARD_DEPTH || column >= BOARD_WIDTH)

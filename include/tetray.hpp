@@ -35,5 +35,9 @@ namespace tet
 
     void TryRotate(sbyte to);
 
+    void SoftDrop();
+
+    void HardDrop();
+
     Color GetColor(sbyte row, sbyte column);
 } // namespace tet

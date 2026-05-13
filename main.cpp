@@ -6,6 +6,8 @@ const int WIDTH = 800;
 const int HEIGHT = 600;
 const char *TITLE = "Tetray";
 
+const int FPS = 30;
+
 const int BLOCK_SIZE = 20;
 const int OFFSET_X = 50;
 const int OFFSET_Y = 0;
@@ -13,6 +15,7 @@ const int OFFSET_Y = 0;
 int main()
 {
     InitWindow(WIDTH, HEIGHT, TITLE);
+    SetTargetFPS(FPS);
 
 reGame:
     tet::Init();
@@ -29,6 +32,7 @@ reGame:
             }
         }
 
+        // Control
         {
             if (IsKeyPressed(KEY_LEFT))
             {
@@ -40,6 +44,18 @@ reGame:
             {
                 std::cout << "Right" << std::endl;
                 tet::TryMove(RIGHT);
+            }
+
+            if (IsKeyDown(KEY_DOWN))
+            {
+                std::cout << "Soft" << std::endl;
+                tet::SoftDrop();
+            }
+
+            if (IsKeyPressed(KEY_UP))
+            {
+                std::cout << "Hard" << std::endl;
+                tet::HardDrop();
             }
 
             if (IsKeyPressed(KEY_A))
