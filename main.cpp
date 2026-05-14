@@ -31,8 +31,7 @@ reGame:
                 goto reGame;
             }
         }
-
-        // Control
+        else
         {
             if (IsKeyPressed(KEY_LEFT))
             {
