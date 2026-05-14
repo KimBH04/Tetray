@@ -80,6 +80,18 @@ reGame:
         {
             ClearBackground(RAYWHITE);
 
+            // ui
+            DrawText("[Left] : move left",  275, 405, 20, GRAY);
+            DrawText("[Right] : move Righ", 275, 430, 20, GRAY);
+            DrawText("[Up] : hard drop",    275, 455, 20, GRAY);
+            DrawText("[Down] : soft drop",  275, 480, 20, GRAY);
+
+            DrawText("[A] : spin left",  475, 405, 20, GRAY);
+            DrawText("[S] : spin half",  475, 430, 20, GRAY);
+            DrawText("[D] : spin right", 475, 455, 20, GRAY);
+            DrawText("[R] : replay (when game over)",  475, 480, 20, GRAY);
+
+            // board
             for (byte r = 0; r < tet::BOARD_DEPTH; r++)
             {
                 for (byte c = 0; c < tet::BOARD_WIDTH; c++)
