@@ -27,7 +27,6 @@ reGame:
         {
             if (IsKeyPressed(KEY_R))
             {
-                std::cout << "Re" << std::endl;
                 goto reGame;
             }
         }
@@ -35,43 +34,36 @@ reGame:
         {
             if (IsKeyPressed(KEY_LEFT))
             {
-                std::cout << "Left" << std::endl;
                 tet::TryMove(LEFT);
             }
 
             if (IsKeyPressed(KEY_RIGHT))
             {
-                std::cout << "Right" << std::endl;
                 tet::TryMove(RIGHT);
             }
 
             if (IsKeyDown(KEY_DOWN))
             {
-                std::cout << "Soft" << std::endl;
                 tet::SoftDrop();
             }
 
             if (IsKeyPressed(KEY_UP))
             {
-                std::cout << "Hard" << std::endl;
                 tet::HardDrop();
             }
 
             if (IsKeyPressed(KEY_A))
             {
-                std::cout << "Left rotate" << std::endl;
                 tet::TryRotate(LEFT);
             }
 
             if (IsKeyPressed(KEY_S))
             {
-                std::cout << "Half rotate" << std::endl;
                 tet::TryRotate(HALF);
             }
 
             if (IsKeyPressed(KEY_D))
             {
-                std::cout << "Right rotate" << std::endl;
                 tet::TryRotate(RIGHT);
             }
         }
