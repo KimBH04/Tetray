@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include <queue>
 #include <span>
@@ -143,6 +144,10 @@ namespace tet
     static std::atomic<bool> isPlay(false);
     static std::atomic<unsigned long long> elapsed(0ULL);
 
+    static unsigned long long score = 0;
+    static unsigned long long highScore = 0;
+    static constexpr char scoreFilePath[] = "./score";
+
     static byte currentShape = 1;
     static byte currentRotate = 1;
     static sbyte currentBitCount = BOARD_WIDTH / 2;
@@ -284,8 +289,9 @@ namespace tet
         return false;
     }
 
-    static inline void updateBoard()
+    static inline unsigned long long updateBoard()
     {
+        unsigned long long score = 0;
         sbyte depth = BOARD_DEPTH - 1;
         while (depth >= 0)
         {
@@ -311,7 +317,11 @@ namespace tet
             {
                 coloredBoard[i] = coloredBoard[i - 1];
             }
+
+            score += score * 2 + 50;
         }
+        
+        return score;
     }
 
     static void run()
@@ -343,10 +353,23 @@ namespace tet
                     break;
                 }
 
-                updateBoard();
+                score += updateBoard();
             }
 
             elapsed++;
+        }
+
+        if (score > highScore)
+        {
+            std::ofstream scoreFile(scoreFilePath);
+            if (scoreFile.is_open())
+            {
+                scoreFile << (highScore = score);
+            }
+            else
+            {
+                std::perror("Fail to open score file.");
+            }
         }
     }
 
@@ -366,6 +389,27 @@ namespace tet
         currentBitCount = BOARD_WIDTH / 2 - 1;
         currentDepth = CREATE_DEPTH;
 
+        score = 0;
+        
+        std::ifstream scoreFile(scoreFilePath);
+        if (scoreFile.is_open())
+        {
+            scoreFile >> highScore;
+
+            std::cout << "red high score : " << highScore << std::endl;
+        }
+        else
+        {
+            std::ofstream scoreFile(scoreFilePath);
+            if (scoreFile.is_open())
+            {
+                scoreFile << 0;
+            }
+            else
+            {
+                std::perror("Fail to open score file.");
+            }
+        }
     }
 
     void Run()
@@ -459,5 +503,15 @@ namespace tet
             }
         }
         return colors[value];
+    }
+
+    unsigned long long GetScore()
+    {
+        return score;
+    }
+
+    unsigned long long GetHighScore()
+    {
+        return std::max(score, highScore);
     }
 } // namespace tet

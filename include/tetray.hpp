@@ -40,4 +40,8 @@ namespace tet
     void HardDrop();
 
     Color GetColor(sbyte row, sbyte column);
+
+    unsigned long long GetScore();
+
+    unsigned long long GetHighScore();
 } // namespace tet
