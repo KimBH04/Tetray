@@ -82,7 +82,7 @@ reGame:
             DrawText("[S] : spin half",  475, 430, 20, GRAY);
             DrawText("[D] : spin right", 475, 455, 20, GRAY);
             DrawText("[R] : replay (when game over)",  475, 480, 20, GRAY);
-            
+
             auto highScore = tet::GetHighScore(), score = tet::GetScore();
 
             char highScoreText[21], scoreText[16];

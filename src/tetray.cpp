@@ -67,7 +67,7 @@ namespace tet
                 0b00000'00100'01110'00000'00000,
             },
         };
-    
+
         // Super Rotation System offsets
         static constexpr std::pair<sbyte, sbyte> JLSTZOffset[][5] =
         {   // J L S T Z
@@ -84,7 +84,7 @@ namespace tet
                 {  0,  0 }, {  0,  0 }, {  0,  0 }, {  0,  0 }, {  0,  0 },
             },
         };
-        
+
         static constexpr std::pair<sbyte, sbyte> OOffset[][1] =
         {   // O
             {   // l
@@ -100,7 +100,7 @@ namespace tet
                 { -1, -1 },
             },
         };
-    
+
         static constexpr std::pair<sbyte, sbyte> IOffset[][5] =
         {   // I
             {   // l
@@ -184,10 +184,10 @@ namespace tet
         case T_MINO:
         case Z_MINO:
             return JLSTZOffset[rotate];
-        
+
         case O_MINO:
             return OOffset[rotate];
-        
+
         case I_MINO:
             return IOffset[rotate];
 
@@ -320,7 +320,7 @@ namespace tet
 
             score += score * 2 + 50;
         }
-        
+
         return score;
     }
 
@@ -390,7 +390,7 @@ namespace tet
         currentDepth = CREATE_DEPTH;
 
         score = 0;
-        
+
         std::ifstream scoreFile(scoreFilePath);
         if (scoreFile.is_open())
         {
@@ -459,7 +459,7 @@ namespace tet
     }
 
     void SoftDrop()
-    {            
+    {
         std::lock_guard<std::mutex> lock(dataMutex);
 
         if (placeable(currentBitCount, currentDepth + 1, currentShape, currentRotate))
@@ -469,7 +469,7 @@ namespace tet
     }
 
     void HardDrop()
-    {      
+    {
         std::lock_guard<std::mutex> lock(dataMutex);
 
         while (placeable(currentBitCount, currentDepth + 1, currentShape, currentRotate))
@@ -498,7 +498,7 @@ namespace tet
                         (SHAPE_OFFSET + rowDiff) * SHAPE_SIZE,
                         (SHAPE_OFFSET + rowDiff + 1) * SHAPE_SIZE
                     );
-                
+
                 value = ((line >> (SHAPE_OFFSET + colDiff)) & 1) * currentShape;
             }
         }
