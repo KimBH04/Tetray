@@ -154,10 +154,54 @@ namespace tet
 
     static byte currentShape = 1;
     static byte currentRotate = 1;
-    static sbyte currentBitCount = BOARD_WIDTH / 2;
+    static sbyte currentBitCount = BOARD_WIDTH / 2 - 1;
     static sbyte currentDepth = CREATE_DEPTH;
 
-    static byte next = 1;
+    static size_t shuffled_index = 0;
+    static byte list[6];
+    static std::queue<byte> readied;
+
+    static inline void fillNextMinos()
+    {
+        for (size_t i = 0; i < 5; i++)
+        {
+            list[i] = list[i + 1];
+        }
+
+        if (readied.empty())
+        {
+            std::vector<byte> base = { 1, 2, 3, 4, 5, 6, 7 };
+            size_t idx = shuffled_index;
+            size_t f = 720;
+            for (int i = 6; i > 0; i--)
+            {
+                auto mok = idx / f;
+                idx %= f;
+
+                readied.push(base[mok]);
+                base.erase(base.begin() + mok);
+
+                f /= i;
+            }
+            readied.push(base[0]);
+
+            shuffled_index *= 2521;
+            shuffled_index += 1357;
+            shuffled_index %= 5040;
+        }
+
+        list[5] = readied.front();
+        readied.pop();
+
+        std::cout << +list[0] << +list[1] << +list[2] << +list[3] << +list[4] << +list[5] << std::endl;
+    }
+
+    static inline byte getNext()
+    {
+        auto v = list[0];
+        fillNextMinos();
+        return v;
+    }
 
     static inline long long getBitSlicing(long long value, const byte &begin, const byte &end)
     {
@@ -338,7 +382,7 @@ namespace tet
             {
                 draw(currentBitCount, currentDepth, currentShape, currentRotate);
 
-                currentShape = std::rand() % 7 + 1;
+                currentShape = getNext();
                 currentRotate = 1;
                 currentBitCount = BOARD_WIDTH / 2 - 1;
                 currentDepth = CREATE_DEPTH;
@@ -381,11 +425,17 @@ namespace tet
         isRun = false;
         isPlay = false;
 
+        shuffled_index = std::time(NULL) % 5040;
+        fillNextMinos();
+        fillNextMinos();
+        fillNextMinos();
+        fillNextMinos();
+        fillNextMinos();
+        fillNextMinos();
+
         std::lock_guard<std::mutex> lock(dataMutex);
-        currentShape = std::rand() % 7 + 1;
-        currentRotate = 1;
-        currentBitCount = BOARD_WIDTH / 2 - 1;
-        currentDepth = CREATE_DEPTH;
+
+        currentShape = getNext();
 
         score = 0;
 
