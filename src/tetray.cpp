@@ -5,6 +5,8 @@
 #include <span>
 
 #include <thread>
+#include <chrono>
+#include <condition_variable>
 #include <atomic>
 #include <mutex>
 
@@ -138,8 +140,10 @@ namespace tet
     static int coloredBoard[BOARD_DEPTH];
 
     static std::jthread runner;
+    static std::condition_variable cv;
+    static std::atomic<bool> signal(false);
 
-    static constexpr unsigned long long RATE = 5ULL;
+    static constexpr unsigned long long RATE = 1ULL;
     static std::atomic<bool> isRun(false);
     static std::atomic<bool> isPlay(false);
     static std::atomic<unsigned long long> elapsed(0ULL);
@@ -328,9 +332,9 @@ namespace tet
     {
         while (isRun && isPlay)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000 / RATE));
-
-            std::lock_guard<std::mutex> lock(dataMutex);
+            std::unique_lock<std::mutex> lock(dataMutex);
+            cv.wait_for(lock, std::chrono::milliseconds(1000 / RATE), []{ return signal.load(); });
+            signal.exchange(false);
 
             if (placeable(currentBitCount, currentDepth + 1, currentShape, currentRotate))
             {
@@ -461,11 +465,9 @@ namespace tet
     void SoftDrop()
     {
         std::lock_guard<std::mutex> lock(dataMutex);
-
-        if (placeable(currentBitCount, currentDepth + 1, currentShape, currentRotate))
-        {
-            currentDepth++;
-        }
+        
+        signal = true;
+        cv.notify_one();
     }
 
     void HardDrop()
@@ -476,6 +478,9 @@ namespace tet
         {
             currentDepth++;
         }
+
+        signal = true;
+        cv.notify_one();
     }
 
     Color GetColor(sbyte row, sbyte column)
