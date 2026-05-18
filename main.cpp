@@ -62,7 +62,7 @@ reGame:
             case KEY_UP:
                 tet::HardDrop();
                 break;
-            
+
             default:
                 break;
             }

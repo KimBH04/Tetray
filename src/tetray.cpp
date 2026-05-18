@@ -209,9 +209,6 @@ namespace tet
         int shape = shapes[shapeIndex][shapeRotateIndex];
         for (sbyte i = -SHAPE_OFFSET; i <= SHAPE_OFFSET; i++)
         {
-            // if (depth + i < CREATE_DEPTH)
-            //     continue;
-
             auto shapeLine = getBitSlicing(shape, (SHAPE_OFFSET + i) * SHAPE_SIZE, (SHAPE_OFFSET + i + 1) * SHAPE_SIZE);
             if (shapeLine == 0)
                 continue;
@@ -266,9 +263,6 @@ namespace tet
                 if (((shapeLine >> (SHAPE_OFFSET + j)) & 1) == 0)
                     continue;
 
-                // if (erase)
-                //     coloredBoard[depth + i] &= 0x3FFFFFFF ^ ((int)COLOR_MASK << ((bitCount + j) * MASK_COUNT));
-                // else
                     coloredBoard[depth + i] |= (int)shapeIndex << ((bitCount + j) * MASK_COUNT);
             }
         }
@@ -465,7 +459,7 @@ namespace tet
     void SoftDrop()
     {
         std::lock_guard<std::mutex> lock(dataMutex);
-        
+
         signal = true;
         cv.notify_one();
     }
