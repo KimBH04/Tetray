@@ -32,39 +32,53 @@ reGame:
         }
         else
         {
-            if (IsKeyPressed(KEY_LEFT))
+            int key = GetKeyPressed();
+            switch (key)
+            {
+            case KEY_LEFT:
+                tet::TryMove(LEFT);
+                break;
+
+            case KEY_RIGHT:
+                tet::TryMove(RIGHT);
+                break;
+
+            case KEY_A:
+                tet::TryRotate(LEFT);
+                break;
+
+            case KEY_D:
+                tet::TryRotate(RIGHT);
+                break;
+
+            case KEY_S:
+                tet::TryRotate(HALF);
+                break;
+
+            case KEY_DOWN:
+                tet::SoftDrop();
+                break;
+
+            case KEY_UP:
+                tet::HardDrop();
+                break;
+            
+            default:
+                break;
+            }
+
+            if (IsKeyPressedRepeat(KEY_LEFT))
             {
                 tet::TryMove(LEFT);
             }
-
-            if (IsKeyPressed(KEY_RIGHT))
+            else if (IsKeyPressedRepeat(KEY_RIGHT))
             {
                 tet::TryMove(RIGHT);
             }
 
-            if (IsKeyDown(KEY_DOWN))
+            if (IsKeyPressedRepeat(KEY_DOWN))
             {
                 tet::SoftDrop();
-            }
-
-            if (IsKeyPressed(KEY_UP))
-            {
-                tet::HardDrop();
-            }
-
-            if (IsKeyPressed(KEY_A))
-            {
-                tet::TryRotate(LEFT);
-            }
-
-            if (IsKeyPressed(KEY_S))
-            {
-                tet::TryRotate(HALF);
-            }
-
-            if (IsKeyPressed(KEY_D))
-            {
-                tet::TryRotate(RIGHT);
             }
         }
 
